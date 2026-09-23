@@ -66,6 +66,17 @@ await connectDb(URI_DB)
 
 
 switch (action) {
+    case "info":
+        console.log(`
+            Comandos disponibles:
+            read = obtener todas las películas
+            find id = obtener una película por ID
+            create = crear una película
+            update id = actualizar una película
+            delete id = eliminar una película
+        `)
+        process.exit(0)
+
     case "read":
         console.log(await readMovie())
         process.exit(0)
@@ -150,7 +161,7 @@ switch (action) {
     
     default:
         console.log(`
-            Comandos disponibles:
+            Comandos no reconocido. Los comandos disponibles son:
             read = obtener todas las películas
             find id = obtener una película por ID
             create = crear una película
