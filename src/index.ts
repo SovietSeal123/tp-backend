@@ -10,8 +10,8 @@ const connectDb = async (URI: string) => {
         console.log(`conectado a MongoDb`)
     } catch(e){
         console.log(`Error al conectar a MongoDb`)
+        process.exit(1)
     }
-    console.log(URI)
 }
 
 interface IMovie {
@@ -55,20 +55,20 @@ const readMovieById = async (id: string) => {
 }
 
 const updateMovie = async (id: string, data: IMovie) =>  {
-   return await Movie.findByIdAndUpdate(id, data)
+   return await Movie.findByIdAndUpdate(id, data, { new: true })
 }
 
 const deleteMovie = async (id: string) =>  {
     return await Movie.findByIdAndDelete(id)
 }
 
-connectDb(URI_DB)
+await connectDb(URI_DB)
 
 
 switch (action) {
     case "read":
         console.log(await readMovie())
-        process.exit(1)
+        process.exit(0)
     
     case "find":
     const id = args[1]
@@ -77,7 +77,7 @@ switch (action) {
         process.exit(1)
     }
     console.log(await readMovieById(id))
-    process.exit(1)
+    process.exit(0)
 
     case "create":
     const title = args[1]
@@ -94,8 +94,13 @@ switch (action) {
         process.exit(1)
     }
 
-    console.log(await createMovie(title, director, genre, year, format, price, stock, available))
+    if (isNaN(year) || isNaN(price) || isNaN(stock)) {
+    console.log("El año, precio y stock deben ser números")
     process.exit(1)
+    }
+
+    console.log(await createMovie(title, director, genre, year, format, price, stock, available))
+    process.exit(0)
 
     case "update":
     const idUpdate = args[1]
@@ -113,6 +118,11 @@ switch (action) {
         process.exit(1)
     }
 
+    if (isNaN(yearUpdate) || isNaN(priceUpdate) || isNaN(stockUpdate)) {
+    console.log("El año, precio y stock deben ser números")
+    process.exit(1)
+    }
+
     const data: IMovie = {
         title: titleUpdate,
         director: directorUpdate,
@@ -125,7 +135,7 @@ switch (action) {
     }
 
     console.log(await updateMovie(idUpdate, data))
-    process.exit(1)
+    process.exit(0)
 
     case "delete":
     const idDelete = args[1]
@@ -136,7 +146,7 @@ switch (action) {
     }
 
     console.log(await deleteMovie(idDelete))
-    process.exit(1)
+    process.exit(0)
     
     default:
         console.log(`
